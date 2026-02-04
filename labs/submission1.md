@@ -34,3 +34,28 @@ This adds an extra layer of protection to the software supply chain.
 **Screenshots or verification of the "Verified" badge on GitHub.**
 
   ![Verified Badge](screenshots/img_1.png)
+
+
+## Task 2: PR Template and Checklist
+
+**Screenshot of PR template filling the desc**
+
+  ![PR Template](screenshots/img_3.png)
+
+**Evidence that .github/pull_request_template.md exists on main branch.**
+
+  The file exists at `.github/pull_request_template.md`.
+  ![File in .github folder](screenshots/img_2.png)
+
+
+**Analysis of how PR templates improve collaboration**
+
+PR templates make the code review process more organized and easier to follow.
+
+1. **Clear information:** Each pull request includes a clear goal and list of changes, so reviewers immediately understand what was done.
+2. **Same structure:** All contributors use the same format, which makes reviews faster and more consistent.
+3. **Better quality:** Checklists remind authors to test their code and update documentation before opening a PR, which reduces extra comments and rework.
+
+**Challenges during setup**
+
+The main issue was the setup order. The PR template must be added and pushed to the `main` branch before creating a pull request. If this is not done, GitHub does not apply the template automatically.
