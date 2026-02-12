@@ -336,5 +336,83 @@ cat file.txt
 
 
 
+## Task 3 — Visualize Commit History
+
+### Команды
+
+```bash
+git status
+git switch feature/lab2
+git status
+git add labs/submission2.md
+git commit -m "docs: update submission2 tasks 1-2"
+git switch -c side-branch
+echo "Branch commit" >> history.txt
+git add history.txt
+git commit -m "Side branch commit"
+git switch -
+git log --oneline --graph --all --decorate -15
+```
+
+### Вывод
+
+```text
+On branch feature/lab2
+Your branch is up to date with 'origin/feature/lab2'.
+
+nothing to commit, working tree clean
+Already on 'feature/lab2'
+Your branch is up to date with 'origin/feature/lab2'.
+On branch feature/lab2
+Your branch is up to date with 'origin/feature/lab2'.
+
+nothing to commit, working tree clean
+```
+
+```text
+On branch feature/lab2
+Your branch is up to date with 'origin/feature/lab2'.
+
+nothing to commit, working tree clean
+```
+
+```text
+Switched to a new branch 'side-branch'
+[side-branch 5302521] Side branch commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 history.txt
+```
+
+```text
+Switched to branch 'feature/lab2'
+Your branch is up to date with 'origin/feature/lab2'.
+```
+
+```text
+* 5302521 (side-branch) Side branch commit
+* fef7d67 (HEAD -> feature/lab2, origin/feature/lab2) finish 2 task
+| * 291bd08 (git-reset-practice) First commit
+| * 6eac8d4 Second commit
+| * 7ec3d00 First commit
+|/  
+* e57a2d9 finish 1 task
+* 1373a59 Add test file
+*   ad54f82 (origin/main, main) Merge pull request #1 from KsAKarpeeva73/feature/lab1
+|\  
+| * 4a33850 (origin/feature/lab1) finish 2 task
+| * 99e184b finish 1 task
+| * 990680f docs: add commit signing summary
+| | * 08dabbc (tag: v1.0.0) Add test file
+| |/  
+|/|   
+* | c9679b3 chore: add PR template
+|/  
+* d6b6a03 Update lab2
+* 87810a0 feat: remove old Exam Exemption Policy
+```
+
+### Вывод
+
+Граф `git log --graph --all` удобно показывает, где именно разошлись ветки и какой коммит к какой ветке относится. По нему сразу видно параллельные ветки `side-branch` и `git-reset-practice` и то, что они не слиты обратно в `feature/lab2`.
 
 
