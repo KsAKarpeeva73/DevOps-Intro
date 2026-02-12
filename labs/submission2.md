@@ -416,3 +416,61 @@ Your branch is up to date with 'origin/feature/lab2'.
 Граф `git log --graph --all` удобно показывает, где именно разошлись ветки и какой коммит к какой ветке относится. По нему сразу видно параллельные ветки `side-branch` и `git-reset-practice` и то, что они не слиты обратно в `feature/lab2`.
 
 
+
+## Task 4 — Tagging Commits
+
+### Команды
+
+```bash
+git switch feature/lab2
+git status
+git tag --list
+git show-ref --tags
+git ls-remote --tags origin
+git push origin v1.0.0
+git rev-parse --short HEAD
+git tag v1.1.0
+git push origin v1.1.0
+git show v1.1.0 --oneline --no-patch
+```
+
+### Вывод
+
+```text
+Already on 'feature/lab2'
+Your branch is up to date with 'origin/feature/lab2'.
+On branch feature/lab2
+Your branch is up to date with 'origin/feature/lab2'.
+
+nothing to commit, working tree clean
+v1.0.0
+08dabbc0e01ca71487f6b14d542789e9f99be544 refs/tags/v1.0.0
+```
+
+```text
+08dabbc0e01ca71487f6b14d542789e9f99be544        refs/tags/v1.0.0
+```
+
+```text
+Everything up-to-date
+```
+
+```text
+855b5d5
+Total 0 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/KsAKarpeeva73/DevOps-Intro.git
+ * [new tag]         v1.1.0 -> v1.1.0
+```
+
+```text
+855b5d5 (HEAD -> feature/lab2, tag: v1.1.0, origin/feature/lab2) finish 3 task
+```
+
+### Теги и к каким коммитам привязаны
+
+* v1.0.0 → 08dabbc0e01ca71487f6b14d542789e9f99be544
+* v1.1.0 → 855b5d5
+
+### Зачем вообще нужны теги
+
+Теги нужны, чтобы помечать конкретные стабильные версии кода и потом легко на них ссылаться. Это удобно для релизов, для заметок к версиям и для CI/CD, когда сборка или релиз запускаются по тегу.
