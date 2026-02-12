@@ -474,3 +474,205 @@ To https://github.com/KsAKarpeeva73/DevOps-Intro.git
 ### Зачем вообще нужны теги
 
 Теги нужны, чтобы помечать конкретные стабильные версии кода и потом легко на них ссылаться. Это удобно для релизов, для заметок к версиям и для CI/CD, когда сборка или релиз запускаются по тегу.
+
+
+## Task 5 — git switch vs git checkout vs git restore
+
+### Команды
+
+```bash
+git switch feature/lab2
+git status
+git branch
+
+git switch -c cmd-compare
+git branch
+git status
+git switch -
+git branch
+git status
+
+git checkout -b cmd-compare-2
+git branch
+git status
+git switch -
+git branch
+git status
+
+echo "base" > demo.txt
+git add demo.txt
+git commit -m "chore: add demo file for restore"
+git status
+
+echo "scratch" >> demo.txt
+git status
+cat demo.txt
+git restore demo.txt
+git status
+cat demo.txt
+
+echo "staged-change" >> demo.txt
+git add demo.txt
+git status
+cat demo.txt
+git restore --staged demo.txt
+git status
+cat demo.txt
+
+git add demo.txt
+git commit -m "chore: update demo file"
+git log --oneline -3 --decorate
+cat demo.txt
+
+git restore --source=HEAD~1 demo.txt
+git status
+cat demo.txt
+```
+
+### Вывод
+
+```text
+Already on 'feature/lab2'
+Your branch is up to date with 'origin/feature/lab2'.
+On branch feature/lab2
+Your branch is up to date with 'origin/feature/lab2'.
+
+nothing to commit, working tree clean
+* feature/lab2
+  git-reset-practice
+  main
+  side-branch
+```
+
+```text
+Switched to a new branch 'cmd-compare'
+* cmd-compare
+  feature/lab2
+  git-reset-practice
+  main
+  side-branch
+On branch cmd-compare
+nothing to commit, working tree clean
+Switched to branch 'feature/lab2'
+Your branch is up to date with 'origin/feature/lab2'.
+  cmd-compare
+* feature/lab2
+  git-reset-practice
+  main
+  side-branch
+On branch feature/lab2
+Your branch is up to date with 'origin/feature/lab2'.
+
+nothing to commit, working tree clean
+```
+
+```text
+Switched to a new branch 'cmd-compare-2'
+  cmd-compare
+* cmd-compare-2
+  feature/lab2
+  git-reset-practice
+  main
+  side-branch
+On branch cmd-compare-2
+nothing to commit, working tree clean
+Switched to branch 'feature/lab2'
+Your branch is up to date with 'origin/feature/lab2'.
+  cmd-compare
+  cmd-compare-2
+* feature/lab2
+  git-reset-practice
+  main
+  side-branch
+On branch feature/lab2
+Your branch is up to date with 'origin/feature/lab2'.
+
+nothing to commit, working tree clean
+```
+
+```text
+[feature/lab2 f2a27d5] chore: add demo file for restore
+ 1 file changed, 1 insertion(+)
+ create mode 100644 demo.txt
+On branch feature/lab2
+Your branch is ahead of 'origin/feature/lab2' by 1 commit.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+```
+
+```text
+On branch feature/lab2
+Your branch is ahead of 'origin/feature/lab2' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   demo.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+base
+scratch
+On branch feature/lab2
+Your branch is ahead of 'origin/feature/lab2' by 1 commit.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+base
+```
+
+```text
+On branch feature/lab2
+Your branch is ahead of 'origin/feature/lab2' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   demo.txt
+
+base
+staged-change
+On branch feature/lab2
+Your branch is ahead of 'origin/feature/lab2' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   demo.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+base
+staged-change
+```
+
+```text
+[feature/lab2 8b2b2d4] chore: update demo file
+ 1 file changed, 1 insertion(+)
+8b2b2d4 (HEAD -> feature/lab2) chore: update demo file
+f2a27d5 chore: add demo file for restore
+bd20ea6 (origin/feature/lab2, cmd-compare-2, cmd-compare) finish 4 task
+base
+staged-change
+```
+
+```text
+On branch feature/lab2
+Your branch is ahead of 'origin/feature/lab2' by 2 commits.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   demo.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+base
+```
+
+### Когда что использовать
+
+`git switch` я использую, когда мне нужно только работать с ветками: создать ветку и перейти на неё или быстро вернуться на прошлую ветку через `git switch -`.
+`git checkout` делает то же самое, но он старый и у него слишком много ролей, поэтому его легко перепутать с восстановлением файлов.
+`git restore` я использую, когда нужно откатить изменения в файлах: убрать изменения из рабочей папки, снять файл из staged или вернуть файл из другого коммита.
