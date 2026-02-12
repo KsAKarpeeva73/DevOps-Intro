@@ -123,3 +123,218 @@ Test content
 
 ---
 
+Ниже даю **готовый исправленный кусок для Task 2** под вставку в `labs/submission2.md`. Я оставила **все выводы как есть**, только убрала эти отладочные строки с ===== и оформила нормально. Пишу от женского лица и простым студенческим языком.
+
+Важно: у тебя в середине вылезла ошибка `fatal: Cannot do hard reset with paths.` — я её **не прячу**, а просто фиксирую в отчёте и объясняю, что я сделала дальше.
+
+---
+
+## Task 2 — Reset and Reflog Recovery
+
+### 2.1: Создание ветки
+
+Команды:
+
+```bash
+git status
+git switch feature/lab2
+git status
+git switch -c git-reset-practice
+git status
+```
+
+Вывод:
+
+```text
+On branch feature/lab2
+nothing to commit, working tree clean
+```
+
+Дальше я сделала три последовательных коммита в ветке `git-reset-practice`:
+
+```bash
+echo "First commit" > file.txt
+git add file.txt
+git commit -m "First commit"
+
+echo "Second commit" >> file.txt
+git add file.txt
+git commit -m "Second commit"
+
+echo "Third commit" >> file.txt
+git add file.txt
+git commit -m "Third commit"
+```
+
+---
+
+### 2.2: reset --soft, reset --hard и восстановление через reflog
+
+#### reset --soft HEAD~1
+
+Команды:
+
+```bash
+git switch git-reset-practice
+git log --oneline -5 --decorate
+git status
+cat file.txt
+
+git reset --soft HEAD~1
+
+git log --oneline -5 --decorate
+git status
+cat file.txt
+```
+
+Вывод:
+
+```text
+M       labs/submission2.md
+Already on 'git-reset-practice'
+291bd08 (HEAD -> git-reset-practice) First commit
+6eac8d4 Second commit
+7ec3d00 First commit
+e57a2d9 (feature/lab2) finish 1 task
+1373a59 Add test file
+On branch git-reset-practice
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   labs/submission2.md
+
+First commit
+6eac8d4 (HEAD -> git-reset-practice) Second commit
+7ec3d00 First commit
+e57a2d9 (feature/lab2) finish 1 task
+1373a59 Add test file
+ad54f82 (origin/main, main) Merge pull request #1 from KsAKarpeeva73/feature/lab1
+On branch git-reset-practice
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   file.txt
+        modified:   labs/submission2.md
+
+First commit
+```
+После `git reset --soft HEAD~1` HEAD сдвигается назад по истории, но изменения не пропадают.
+По `git status` видно, что изменения остаются в индексе и считаются подготовленными к коммиту, в моём случае staged были `file.txt` и `labs/submission2.md`.
+
+---
+
+#### reset --hard HEAD~1
+
+Команды:
+
+```bash
+git reset --hard HEAD@{2}
+git log --oneline -5 --decorate
+git status
+cat file.txt
+
+git reset --hard HEAD~1
+
+git log --oneline -5 --decorate
+git status
+cat file.txt
+```
+
+Вывод:
+
+```text
+fatal: Cannot do hard reset with paths.
+6eac8d4 (HEAD -> git-reset-practice) Second commit
+7ec3d00 First commit
+e57a2d9 (feature/lab2) finish 1 task
+1373a59 Add test file
+ad54f82 (origin/main, main) Merge pull request #1 from KsAKarpeeva73/feature/lab1
+On branch git-reset-practice
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   file.txt
+        modified:   labs/submission2.md
+
+First commit
+HEAD is now at 7ec3d00 First commit
+7ec3d00 (HEAD -> git-reset-practice) First commit
+e57a2d9 (feature/lab2) finish 1 task
+1373a59 Add test file
+ad54f82 (origin/main, main) Merge pull request #1 from KsAKarpeeva73/feature/lab1
+4a33850 (origin/feature/lab1) finish 2 task
+On branch git-reset-practice
+nothing to commit, working tree clean
+First commit
+```
+
+После `git reset --hard HEAD~1` Git откатил HEAD назад и очистил рабочую папку: `git status` показал `nothing to commit, working tree clean`.
+По `cat file.txt` видно, что содержимое реально откатилось и осталось только `First commit`.
+
+---
+
+#### reflog и восстановление состояния
+
+Команды:
+
+```bash
+git reflog -10
+git reset --hard HEAD@{2}
+git log --oneline -5 --decorate
+git status
+cat file.txt
+```
+
+Вывод:
+
+```text
+7ec3d00 (HEAD -> git-reset-practice) HEAD@{0}: reset: moving to HEAD~1
+6eac8d4 HEAD@{1}: reset: moving to HEAD~1
+291bd08 HEAD@{2}: checkout: moving from git-reset-practice to git-reset-practice
+291bd08 HEAD@{3}: reset: moving to HEAD~1
+59f8fe7 HEAD@{4}: checkout: moving from git-reset-practice to git-reset-practice
+59f8fe7 HEAD@{5}: commit (amend): finish 2 task
+c85b86a HEAD@{6}: commit: finish 1 task
+291bd08 HEAD@{7}: reset: moving to HEAD~1
+a7c55ba HEAD@{8}: reset: moving to HEAD~1
+bfcfb22 HEAD@{9}: commit: Third commit
+HEAD is now at 291bd08 First commit
+291bd08 (HEAD -> git-reset-practice) First commit
+6eac8d4 Second commit
+7ec3d00 First commit
+e57a2d9 (feature/lab2) finish 1 task
+1373a59 Add test file
+On branch git-reset-practice
+nothing to commit, working tree clean
+First commit
+```
+
+
+`git reflog` реально помогает, потому что он показывает, куда двигался HEAD, даже если коммиты уже не видны в обычном `git log`.
+В моём reflog есть запись `bfcfb22 ... commit: Third commit` — это нужная точка, чтобы вернуть состояние с третьим коммитом.
+Я попробовала восстановиться командой `git reset --hard HEAD@{2}`, но по reflog видно, что `HEAD@{2}` у меня сейчас относится к checkout, поэтому я в итоге вернулась на `291bd08 First commit`.
+
+Чтобы восстановиться именно на `Third commit`, нужно сброситься на `bfcfb22` (он у меня в reflog как `HEAD@{9}`):
+
+
+```bash
+git reset --hard bfcfb22
+```
+
+
+```bash
+git log --oneline -5 --decorate
+git status
+cat file.txt
+```
+
+---
+
+### Что меняется в working tree, индексе и истории
+
+* `git reset --soft HEAD~1` двигает HEAD назад, но изменения остаются подготовленными к коммиту, то есть остаются в индексе.
+* `git reset --hard HEAD~1` двигает HEAD назад и полностью приводит рабочую директорию и индекс к состоянию того коммита, на который откатились.
+* `git reflog` позволяет найти прошлые состояния HEAD и восстановиться, даже если я уже “ушла назад” reset-ом.
+
+
+
+
+
+
