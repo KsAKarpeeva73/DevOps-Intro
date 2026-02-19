@@ -1,0 +1,19 @@
+name: Lab 3 CI
+
+on:
+  push:
+    branches:
+      - feature/lab3
+
+jobs:
+  basic-info:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print basic info
+        run: |
+          echo "Hello from GitHub Actions!"
+          date
+          echo "Actor: $GITHUB_ACTOR"
+          echo "Ref: $GITHUB_REF"
+          echo "SHA: $GITHUB_SHA"
+          uname -a
