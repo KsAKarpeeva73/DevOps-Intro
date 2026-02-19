@@ -1,0 +1,49 @@
+name: Lab 3 CI
+
+on:
+  push:
+    branches:
+      - feature/lab3
+  workflow_dispatch:
+
+jobs:
+  basic-info:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print basic info
+        run: |
+          echo "Hello from GitHub Actions!"
+          date
+          echo "Actor: $GITHUB_ACTOR"
+          echo "Ref: $GITHUB_REF"
+          echo "SHA: $GITHUB_SHA"
+          uname -a
+
+      - name: System information
+        run: |
+          echo "=== SYSTEM INFO ==="
+          echo "--- OS / Kernel ---"
+          uname -a
+          cat /etc/os-release || true
+
+          echo "--- CPU ---"
+          nproc
+          lscpu || true
+          cat /proc/cpuinfo | head -n 30 || true
+
+          echo "--- Memory ---"
+          free -h || true
+          cat /proc/meminfo | head -n 20 || true
+
+          echo "--- Disk ---"
+          df -h
+          lsblk || true
+
+          echo "--- GitHub runner env ---"
+          echo "RUNNER_OS=$RUNNER_OS"
+          echo "RUNNER_ARCH=$RUNNER_ARCH"
+          echo "RUNNER_NAME=$RUNNER_NAME"
+          echo "RUNNER_TEMP=$RUNNER_TEMP"
+          echo "GITHUB_WORKFLOW=$GITHUB_WORKFLOW"
+          echo "GITHUB_RUN_ID=$GITHUB_RUN_ID"
+          echo "GITHUB_RUN_NUMBER=$GITHUB_RUN_NUMBER"
